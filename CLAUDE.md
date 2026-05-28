@@ -44,7 +44,9 @@ When you see the onboarding trigger at session start, do the following:
 
 ---
 
-## Mandatory: docs update on every feature implementation
+## Mandatory: pre-ship checklist + docs update on every feature
+
+Before committing any feature that is ready to ship, run `/ship-checklist` to walk through the six-item launch-hygiene check (security/auth, backups, maintenance kill-switch, testing, SEO, code structure). The skill is bundled in `.claude/skills/` — no install needed.
 
 After completing any feature, bug fix, or notable change, always update the following files **in the same commit** as the code:
 
