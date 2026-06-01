@@ -1,2 +1,5 @@
 # Auto detect text files and perform LF normalization
 * text=auto
+
+# Skill files are ZIP archives — never touch line endings
+*.skill binary
