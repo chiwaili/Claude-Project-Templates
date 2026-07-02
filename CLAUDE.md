@@ -46,7 +46,7 @@ When you see the onboarding trigger at session start, do the following:
 
 ## Mandatory: pre-ship checklist + docs update on every feature
 
-Before committing any feature that is ready to ship, run `/ship-checklist` to walk through the six-item launch-hygiene check (security/auth, backups, maintenance kill-switch, testing, SEO, code structure). The skill is bundled in `.claude/skills/` — no install needed.
+Before committing any feature that is ready to ship, run `/ship-checklist` to walk through the seven-item launch-hygiene check (security/auth, backups, maintenance kill-switch, testing, SEO, error pages & crawler files, code structure). The skill is bundled in `.claude/skills/` — no install needed.
 
 After completing any feature, bug fix, or notable change, always update the following files **in the same commit** as the code:
 
@@ -54,6 +54,20 @@ After completing any feature, bug fix, or notable change, always update the foll
 - **`PRD.md`** — update the relevant feature section to reflect actual behaviour; remove items from the Future Roadmap once shipped
 
 Never commit code changes without also committing the corresponding doc updates.
+
+---
+
+## Mandatory: web hygiene scaffold (error pages, robots.txt, sitemap)
+
+Every project with a public web surface must include these from the initial scaffold — build them alongside the first feature, not "later":
+
+- **Custom 404 page** — branded, returns a real HTTP 404 status (not a soft 200), links back to a working page
+- **403 / Forbidden state** — what logged-out or unauthorized users see; never leak stack traces or internal details
+- **500 / generic error page** — friendly fallback that doesn't expose internals; distinct from the maintenance page
+- **`robots.txt`** — correct per environment: staging/preview blocked from indexing, production never shipping `Disallow: /` by accident
+- **`sitemap.xml`** — generated automatically at build or request time, referenced from robots.txt
+
+For projects with no public web surface (CLI, API-only, internal tools), note the N/A in `PRD.md` and skip. `/ship-checklist` re-verifies these on every ship (item 6).
 
 ---
 

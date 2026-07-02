@@ -43,6 +43,12 @@
 - **What it does:**
 - **Why it exists:**
 
+### 4.x. Web hygiene (pre-filled — applies to any public web surface)
+
+- **What it does:** Custom 404, 403/Forbidden, and 500 error pages; `robots.txt` correct per environment; auto-generated `sitemap.xml` referenced from robots.txt.
+- **Why it exists:** Launch hygiene — broken-link UX, no leaked internals on errors, and correct search-engine indexing from day one. Verified on every ship by `/ship-checklist` (item 6).
+- **Technical detail (if relevant):** 404 must return a real HTTP 404 status, not a soft 200. Staging/preview environments must be blocked from indexing. *(Mark N/A here if the project has no public web surface.)*
+
 ---
 
 ## 5. User Flows

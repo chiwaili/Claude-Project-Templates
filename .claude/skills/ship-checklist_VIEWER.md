@@ -1,11 +1,11 @@
 ---
 name: ship-checklist
-description: Walks through a six-item launch-hygiene checklist for solo / small-project shipping — security and API access, database backup and recovery, remote-toggleable maintenance/holding state, automated testing, SEO, and code structure. Also covers immediate post-launch ops such as analytics setup, canonical domain/HTTPS redirects, and support email readiness. Use whenever the user is about to ship, deploy, launch, release, push to production, "go live", merge to main, cut a build, or take a feature out from behind a flag. Also trigger for "is this ready to ship?", "pre-deploy check", "launch readiness", "PR review for a feature about to launch", "I'm about to push this", or whenever a user describes a feature reaching the point where it leaves their machine. Use proactively when a draft PRD is being finalised or when a build looks like it's a step away from production. The skill's job is to surface things that are easy to forget when shipping alone, before they bite — not to produce a long document.
+description: Walks through a seven-item launch-hygiene checklist for solo / small-project shipping — security and API access, database backup and recovery, remote-toggleable maintenance/holding state, automated testing, SEO, error pages and crawler files (404/403/500, robots.txt, sitemap), and code structure. Also covers immediate post-launch ops such as analytics setup, canonical domain/HTTPS redirects, and support email readiness. Use whenever the user is about to ship, deploy, launch, release, push to production, "go live", merge to main, cut a build, or take a feature out from behind a flag. Also trigger for "is this ready to ship?", "pre-deploy check", "launch readiness", "PR review for a feature about to launch", "I'm about to push this", or whenever a user describes a feature reaching the point where it leaves their machine. Use proactively when a draft PRD is being finalised or when a build looks like it's a step away from production. The skill's job is to surface things that are easy to forget when shipping alone, before they bite — not to produce a long document.
 ---
 
 # ship-checklist
 
-A six-item checklist for the moment a feature is about to leave your machine. Designed for solo / small-project shipping where you are the dev, the on-call, the PM, and the person who'll be debugging at 11pm if something goes wrong.
+A seven-item checklist for the moment a feature is about to leave your machine. Designed for solo / small-project shipping where you are the dev, the on-call, the PM, and the person who'll be debugging at 11pm if something goes wrong.
 
 ## Audience: solo / small projects
 
@@ -14,7 +14,7 @@ This skill assumes a single-person operator. The "team" is one human; the audien
 - **You are the owner of every item.** Don't make the user assign owners.
 - **Mechanisms can be reused.** A global maintenance flag covers most features. A nightly snapshot covers most tables. The checklist is asking "is this feature inside that umbrella?", not "build a new umbrella for it".
 - **N/A is honest, not lazy.** Some items genuinely don't apply (SEO for an internal CLI). Marking N/A with a one-line reason is the right answer; silently skipping is the failure mode.
-- **The win condition is "I won't get blindsided"**, not "every box is full". A good checklist run might be five N/As and one real action item.
+- **The win condition is "I won't get blindsided"**, not "every box is full". A good checklist run might be six N/As and one real action item.
 
 If the user later signals collaborators, scale formality up.
 
@@ -33,7 +33,7 @@ If the user is much earlier than that — still scoping, still building — say 
 
 ## How to run it
 
-Default to a **conversational walk-through**: take the items one or two at a time, ask the user the relevant question, capture their answer, and move on. Don't dump the whole checklist at once and ask them to fill in six fields — that's how things get rubber-stamped.
+Default to a **conversational walk-through**: take the items one or two at a time, ask the user the relevant question, capture their answer, and move on. Don't dump the whole checklist at once and ask them to fill in seven fields — that's how things get rubber-stamped.
 
 If the user says they want it as a saved document (e.g. for a PRD appendix or a release runbook), produce a markdown block with each item as a heading and their answer underneath, plus a short summary of any open items.
 
@@ -45,7 +45,7 @@ For each item, the goal is one of:
 
 The `N/A` option matters. You're not trying to pad the doc; you're trying to make sure nothing gets dropped silently.
 
-## The six items
+## The seven items
 
 ### 1. Security, especially API access
 
@@ -112,7 +112,7 @@ What to surface (only for user-facing public web surfaces):
 
 - Metadata: page title, description, canonical URL, OG / Twitter cards.
 - Structured data if applicable (FAQ, Article, Product, Breadcrumb).
-- Robots / sitemap impact: is this page indexable, included in the sitemap?
+- Robots / sitemap impact: is this page indexable, included in the sitemap? (The files themselves — robots.txt, sitemap.xml — are item 6.)
 - Performance budget: LCP, INP, CLS targets. For solo work, sane defaults are LCP <2.5s, INP <200ms, CLS <0.1.
 - URL shape and any redirects from old URLs.
 - Post-launch ops: analytics/tracking is installed and verified, the public domain is canonicalized to HTTPS, and www/non-www redirect rules are correct.
@@ -123,7 +123,23 @@ For internal tools, authenticated-only flows, mobile apps, API services, or anyt
 
 > **Example N/A.** "N/A — feature lives behind login in the chat UI; not a crawlable URL."
 
-### 6. Code structure
+### 6. Error pages & crawler files
+
+What to surface (for public web surfaces):
+
+- **404 page**: a custom, branded not-found page that returns a real HTTP 404 status (not a soft 200), with a link back to somewhere useful. Does this feature add routes that could 404 (deleted content, bad slugs)?
+- **403 / Forbidden and auth-failure states**: what a logged-out or unauthorized user sees when they hit this feature's URLs. No stack traces, no internal details, no confirmation that the resource exists if that itself is sensitive.
+- **500 / generic error page**: a friendly fallback that doesn't leak internals. Check it doesn't conflict with the maintenance page from item 3 — they're different states (broken vs. intentionally paused).
+- **robots.txt**: exists, correct for the environment — staging/preview environments blocked from indexing, and production not accidentally shipping `Disallow: /`.
+- **sitemap.xml**: exists, generated automatically at build or request time (a hand-maintained sitemap is a stale sitemap), referenced from robots.txt, and includes/excludes this feature's URLs correctly.
+
+The error pages are usually a one-time scaffold reused by every feature — like the maintenance flag, the question is "are this feature's failure modes covered by the existing pages?", not "build new ones each time".
+
+> **Example real answer.** "Custom 404 and 500 pages already scaffolded (`src/pages/NotFound.tsx`, `src/pages/Error.tsx`); new `/reports/:id` route 404s correctly on bad ids and 403s (generic 'no access' page) for other users' reports. robots.txt unchanged; sitemap auto-generated at build, excludes `/reports/*` since they're private."
+
+> **Example N/A.** "N/A — internal CLI tool; no web surface, no crawlers, no HTTP error pages."
+
+### 7. Code structure
 
 What to surface:
 
@@ -140,7 +156,7 @@ Keep it short — a paragraph plus a path is usually enough. The point is to mak
 
 ## Closing the run
 
-After walking the six items, give the user a short summary:
+After walking the seven items, give the user a short summary:
 
 - Which items came back as real content (good — they thought it through).
 - Which came back as N/A (note them with reasons; they're not silent).
@@ -154,7 +170,7 @@ Also confirm any immediate post-launch ops that belong in the same readiness pas
 
 Watch for these and call them out:
 
-- **Rubber-stamping.** All six items get a one-word answer. Push for specifics on at least the ones that aren't honestly N/A.
+- **Rubber-stamping.** All seven items get a one-word answer. Push for specifics on at least the ones that aren't honestly N/A.
 - **"It's covered" without naming what covers it.** "We have backups" is not an answer. "Nightly Postgres snapshot to S3 includes the new table" is.
 - **Soft N/A.** Marking SEO as N/A "because we'll do it later" — that's an open item, not an N/A.
 - **Listing the same flag for maintenance and as the kill switch without thinking through the difference.** Often fine, but ask the user to confirm rather than assume.

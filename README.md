@@ -69,14 +69,15 @@ your-project/
 
 ## Bundled: `/ship-checklist`
 
-Every project cloned from this template includes a pre-ship checklist skill. Before any feature goes to production, run `/ship-checklist` and Claude walks you through six items conversationally:
+Every project cloned from this template includes a pre-ship checklist skill. Before any feature goes to production, run `/ship-checklist` and Claude walks you through seven items conversationally:
 
 1. Security & API access
 2. Database backup & recovery
 3. Maintenance kill-switch (remote-toggleable)
 4. Automated testing
 5. SEO
-6. Code structure
+6. Error pages & crawler files (404, 403, 500, robots.txt, sitemap.xml)
+7. Code structure
 
 No install needed — the skill is in `.claude/skills/` and works immediately.
 
