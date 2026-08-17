@@ -1,0 +1,58 @@
+<!--
+  GA4 head snippet with Consent Mode v2 defaults.
+
+  Use this when you want the tag present before your JS bundle loads (typical for
+  a plain-HTML marketing site, or for a framework where you control the document
+  head). If you load GA4 through `analytics.ts` instead, you do not need this
+  file — that module injects the script itself.
+
+  Placement: immediately after the opening <head> tag, on every page you measure.
+  The consent defaults must come before the gtag.js script tag, so that no tag
+  can fire under an unstated consent state.
+
+  Replace G-XXXXXXXXXX with your measurement ID, or inject it at build time.
+-->
+
+<!-- Consent Mode v2 defaults — denied until the user chooses -->
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag() { dataLayer.push(arguments); }
+
+  gtag('consent', 'default', {
+    'ad_storage': 'denied',
+    'ad_user_data': 'denied',
+    'ad_personalization': 'denied',
+    'analytics_storage': 'denied',
+    'wait_for_update': 500
+  });
+
+  // Optional: a looser default outside regions that require prior consent.
+  // Set region codes deliberately — read ANALYTICS.md before uncommenting, and
+  // take your own legal advice about which regions belong here.
+  //
+  // gtag('consent', 'default', {
+  //   'analytics_storage': 'granted',
+  //   'region': ['US-CA']
+  // });
+</script>
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+<script>
+  gtag('js', new Date());
+  gtag('config', 'G-XXXXXXXXXX', {
+    // Page views are sent manually so SPA route changes are counted once.
+    // If you leave this true, do not also send page_view from analytics.ts.
+    'send_page_view': false
+  });
+</script>
+
+<!--
+  Then, from your consent UI:
+
+    gtag('consent', 'update', { 'analytics_storage': 'granted' });
+
+  ...passing only the signals the user actually agreed to. A banner that calls
+  'update' with everything granted regardless of the click is worse than no
+  banner, because it looks deliberate.
+-->
